@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html lang="th">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>เกมตอบคำถามสังคม - ม.6</title>
+
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="game-container">
+<!-- Start Screen -->
+<div class="start-screen" id="startScreen">
+<h1 class="title">🏛️ เกมตอบคำถามสังคม ม.6 🏛️</h1>
+<div class="name-input">
+<label for="playerName">ชื่อผู้เล่น</label>
+<input id="playerName" maxlength="20" placeholder="ใส่ชื่อของคุณ" type="text"/>
+</div>
+<div class="character-selection">
+<div class="character-card" data-character="buddha">
+<img class="character-icon" src="./buddha.png" alt="พระพุทธเจ้า"/>
+<div>พระพุทธเจ้า</div>
+<small>รัศมีทอง บัวใต้เท้า</small>
+</div>
+<div class="character-card" data-character="thai">
+<img class="character-icon" src="./villager.png" alt="ชาวบ้าน"/>
+<div>ประชาชนชุดไทย</div>
+<small>ชุดผ้าไทยสวยงาม</small>
+</div>
+</div>
+<button class="start-btn" id="startGame">เริ่มเกม</button>
+<div class="dev-bypass" onclick="devBypass()">ข้ามไปกระดาน (ทดสอบ)</div>
+</div>
+<!-- Unified HUD -->
+<div class="game-hud" id="gameHud">
+<div class="hud-chip">ช่อง <span id="currentTile">1</span>/<span id="maxTile">20</span></div>
+<div class="hud-chip">ข้อ <span id="answered">0</span>/20</div>
+<div class="hud-chip">เวลา <span id="currentTimer">20</span>s</div>
+<div class="hud-chip">ลูกอม <span id="candies">0</span></div>
+<div class="hud-chip">เซียมซี ×<span id="siemseeCount">2</span></div>
+<div class="hud-chip">ระดับ <span id="rank">ศรัทธา</span></div>
+<div class="hud-chip">สตรีค <span id="streak">0</span></div>
+</div>
+<!-- Game Board -->
+<div class="game-board">
+<div class="board-path" id="boardPath">
+<!-- Board cells will be generated here -->
+</div>
+<div class="character" id="character">🧘‍♂️</div>
+</div>
+<!-- Dice -->
+<div class="dice-container" id="diceContainer">
+<div class="dice" id="dice">🎲</div>
+</div>
+<!-- Question Modal -->
+<div class="question-modal" id="questionModal">
+<div class="question-card">
+<div class="timer-container">
+<div class="water-drop"></div>
+<div class="timer" id="timer">30</div>
+</div>
+<div class="question-text" id="questionText"></div>
+<div class="options" id="options"></div>
+<div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+<button class="siemsee-hint-btn" id="hintBtn">🔮 เขย่าเซียมซี</button>
+<button class="earn-siemsee-btn" id="earnBtn">อยากได้เซียมซีเพิ่มใช่ไหม??</button>
+</div>
+</div>
+</div>
+<!-- Feedback -->
+<div class="feedback" id="feedback">
+<div id="feedbackText"></div>
+<div id="feedbackExplanation" style="margin-top: 1rem; font-size: 0.9rem; color: #666;"></div>
+</div>
+<!-- Challenge Overlay -->
+<div class="challenge-overlay" id="challengeOverlay">
+<div class="challenge-card">
+<div class="challenge-title">🕯️ ภารกิจ 10 วินาที 🕯️</div>
+<div class="challenge-subtitle">ตอบให้ถูกภายในเวลา เพื่อรับเซียมซี +1</div>
+<div class="challenge-timer-container">
+<div class="challenge-timer-circle" id="challengeTimerCircle">
+<span id="challengeTimer">10</span>s
+                    </div>
+</div>
+<div class="challenge-question" id="challengeQuestion"></div>
+<div class="challenge-options" id="challengeOptions"></div>
+</div>
+</div>
+<!-- Floating Dice Button -->
+<button class="dice-fab" id="rollDice">🎲</button>
+<!-- Temple Gate Animation -->
+<div class="temple-gate-overlay" id="templeGateOverlay">
+<div class="temple-gate">
+<div class="golden-light"></div>
+<div class="lotus-bloom">
+<svg style="width: 100%; height: 100%;" viewbox="0 0 60 60">
+<g transform="translate(30,30)">
+<path d="M0,-20 Q-10,-10 -20,0 Q-10,10 0,20 Q10,10 20,0 Q10,-10 0,-20" fill="#FFD700" opacity="0.9" stroke="#D19B00" stroke-width="2"></path>
+<path d="M0,-15 Q-8,-8 -15,0 Q-8,8 0,15 Q8,8 15,0 Q8,-8 0,-15" fill="#FFF7D6" opacity="0.7"></path>
+<circle cx="0" cy="0" fill="#FFB84D" r="4"></circle>
+</g>
+</svg>
+</div>
+<div class="lotus-bloom">
+<svg style="width: 100%; height: 100%;" viewbox="0 0 60 60">
+<g transform="translate(30,30)">
+<path d="M0,-20 Q-10,-10 -20,0 Q-10,10 0,20 Q10,10 20,0 Q10,-10 0,-20" fill="#FFD700" opacity="0.9" stroke="#D19B00" stroke-width="2"></path>
+<path d="M0,-15 Q-8,-8 -15,0 Q-8,8 0,15 Q8,8 15,0 Q8,-8 0,-15" fill="#FFF7D6" opacity="0.7"></path>
+<circle cx="0" cy="0" fill="#FFB84D" r="4"></circle>
+</g>
+</svg>
+</div>
+<div class="lotus-bloom">
+<svg style="width: 100%; height: 100%;" viewbox="0 0 60 60">
+<g transform="translate(30,30)">
+<path d="M0,-20 Q-10,-10 -20,0 Q-10,10 0,20 Q10,10 20,0 Q10,-10 0,-20" fill="#FFD700" opacity="0.9" stroke="#D19B00" stroke-width="2"></path>
+<path d="M0,-15 Q-8,-8 -15,0 Q-8,8 0,15 Q8,8 15,0 Q8,-8 0,-15" fill="#FFF7D6" opacity="0.7"></path>
+<circle cx="0" cy="0" fill="#FFB84D" r="4"></circle>
+</g>
+</svg>
+</div>
+<div class="lotus-bloom">
+<svg style="width: 100%; height: 100%;" viewbox="0 0 60 60">
+<g transform="translate(30,30)">
+<path d="M0,-20 Q-10,-10 -20,0 Q-10,10 0,20 Q10,10 20,0 Q10,-10 0,-20" fill="#FFD700" opacity="0.9" stroke="#D19B00" stroke-width="2"></path>
+<path d="M0,-15 Q-8,-8 -15,0 Q-8,8 0,15 Q8,8 15,0 Q8,-8 0,-15" fill="#FFF7D6" opacity="0.7"></path>
+<circle cx="0" cy="0" fill="#FFB84D" r="4"></circle>
+</g>
+</svg>
+</div>
+<svg style="width: 100%; height: 100%;" viewbox="0 0 300 400">
+<!-- Temple Gate -->
+<rect fill="#8B4513" height="250" stroke="#654321" stroke-width="3" width="200" x="50" y="100"></rect>
+<rect fill="#A0522D" height="230" stroke="#8B4513" stroke-width="2" width="180" x="60" y="110"></rect>
+<!-- Gate Doors -->
+<rect fill="#CD853F" height="200" stroke="#8B4513" stroke-width="2" width="80" x="70" y="120"></rect>
+<rect fill="#CD853F" height="200" stroke="#8B4513" stroke-width="2" width="80" x="150" y="120"></rect>
+<!-- Door Handles -->
+<circle cx="140" cy="220" fill="#FFD700" r="4"></circle>
+<circle cx="160" cy="220" fill="#FFD700" r="4"></circle>
+<!-- Roof -->
+<polygon fill="#B22222" points="30,100 150,50 270,100" stroke="#8B0000" stroke-width="2"></polygon>
+<polygon fill="#DC143C" points="40,110 150,65 260,110"></polygon>
+<!-- Decorative Elements -->
+<circle cx="150" cy="80" fill="#FFD700" r="8" stroke="#D4AF37" stroke-width="2"></circle>
+<text fill="#8B4513" font-family="serif" font-size="12" text-anchor="middle" x="150" y="85">🕉️</text>
+</svg>
+</div>
+</div>
+</div>
+
+
+
+
+  <script src="script.js" defer></script>
+</body>
+</html>
